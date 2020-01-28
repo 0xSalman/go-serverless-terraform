@@ -1,0 +1,8 @@
+.idea
+.vscode
+.DS_Store
+
+terraform/.terraform
+terraform/repository
+terraform/terraform.tfstate
+terraform/terraform.tfstate.backup
