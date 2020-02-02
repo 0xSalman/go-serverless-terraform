@@ -1,5 +1,5 @@
 resource "aws_dynamodb_table" "user" {
-  name         = "user-${var.ENV}"
+  name         = "user-${var.env}"
   billing_mode = "PAY_PER_REQUEST"
 
   hash_key = "id"
@@ -10,7 +10,7 @@ resource "aws_dynamodb_table" "user" {
 }
 
 resource "aws_dynamodb_table" "conversation" {
-  name         = "conversation-${var.ENV}"
+  name         = "conversation-${var.env}"
   billing_mode = "PAY_PER_REQUEST"
 
   hash_key  = "pkey"

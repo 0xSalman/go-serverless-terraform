@@ -1,6 +1,10 @@
-package user
+package internal
 
 import "time"
+
+type UserService interface {
+	Add(user User) error
+}
 
 type group string
 
@@ -8,6 +12,16 @@ const (
 	Professor group = "professor"
 	Student   group = "student"
 )
+
+func UserGroup(source string) group {
+	switch source {
+	case "student":
+		return Student
+	case "professor":
+		return Professor
+	}
+	return ""
+}
 
 type User struct {
 	ID                  string    `json:"id"`
