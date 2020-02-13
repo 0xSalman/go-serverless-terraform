@@ -14,6 +14,10 @@ variable "CLONE_USER_VERSION" {
   type = string
 }
 
+variable "USER_VERSION" {
+  type = string
+}
+
 variable "global" {
   type = map(string)
   default = {

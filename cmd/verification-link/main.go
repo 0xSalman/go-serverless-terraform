@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
 
 	"github.com/aws/aws-lambda-go/events"
@@ -13,6 +14,7 @@ import (
 //  2) use email template
 func handler(event events.CognitoEventUserPoolsCustomMessage) (events.CognitoEventUserPoolsCustomMessage, error) {
 	if event.TriggerSource == "CustomMessage_SignUp" {
+		log.Printf("Creating verification link for user: {userName=%s, email=%s}\n", event.UserName, event.Request.UserAttributes["email"])
 		codeParameter := event.Request.CodeParameter
 		userID := event.UserName
 		link := fmt.Sprintf("<a href=\"%s?userId=%s&code=%s\" target=\"_blank\">here</a>", verificationURL, userID, codeParameter)

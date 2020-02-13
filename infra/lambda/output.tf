@@ -11,3 +11,10 @@ output "clone_user" {
     arn  = aws_lambda_function.clone_user.arn
   }
 }
+
+output "user" {
+  value = {
+    name = aws_lambda_function.user.function_name
+    arn  = aws_lambda_function.user.arn
+  }
+}

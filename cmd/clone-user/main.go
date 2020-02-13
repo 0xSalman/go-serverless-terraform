@@ -13,7 +13,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 
 	"gitlab.com/rethesis/backend/dynamo"
-	"gitlab.com/rethesis/backend/internal"
+	"gitlab.com/rethesis/backend/model"
 )
 
 // TODO
@@ -26,21 +26,21 @@ func handler(event events.CognitoEventUserPoolsPostConfirmation) (events.Cognito
 	// we use `nickname` for `group` value to enforce
 	// required field in cognito during sign up
 	// this is due to limitation set by cognito on custom attributes
-	userGroup := internal.UserGroup(event.Request.UserAttributes["nickname"])
+	userGroup := model.UserGroup(event.Request.UserAttributes["nickname"])
 	if userGroup == "" {
 		err := errors.New("user group is missing")
 		log.Println(err)
 		return event, err
 	}
 
-	newUser := internal.User{
+	newUser := model.User{
 		ID:          event.UserName,
 		Group:       userGroup,
 		Email:       event.Request.UserAttributes["email"],
 		Created:     time.Now().UTC(),
 		LastUpdated: time.Now().UTC(),
 	}
-	err := userService.Add(newUser)
+	err := userService.Save(newUser)
 	if err != nil {
 		log.Println(err)
 		return event, err
@@ -50,7 +50,7 @@ func handler(event events.CognitoEventUserPoolsPostConfirmation) (events.Cognito
 }
 
 var (
-	userService internal.UserService
+	userService model.UserService
 )
 
 func init() {
@@ -59,7 +59,7 @@ func init() {
 	}))
 	dynamoClient := dynamodb.New(awsSession)
 	userTable := os.Getenv("user_table")
-	userService = dynamo.NewService(dynamoClient, userTable)
+	userService = dynamo.NewUserService(dynamoClient, userTable)
 }
 
 func main() {
