@@ -1,6 +1,10 @@
-package internal
+package model
 
 import "time"
+
+type ConversationService interface {
+	Save(conversation Conversation) error
+}
 
 type category string
 type entity string

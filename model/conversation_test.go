@@ -1,4 +1,4 @@
-package internal
+package model
 
 import (
 	"log"
@@ -9,7 +9,6 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
-	"gitlab.com/rethesis/backend/common"
 )
 
 type testInterface interface {
@@ -65,7 +64,7 @@ func TestCreateConversation(t *testing.T) {
 		ID:   "2350048295201640999",
 		Name: "Jennin Raffington",
 	}
-	conversationID := common.GenerateID()
+	conversationID := "1234"
 
 	items := []testInterface{
 		&Conversation{
@@ -101,7 +100,7 @@ func TestCreateConversation(t *testing.T) {
 		&Message{
 			shared: shared{
 				PKey:     conversationID,
-				ID:       common.GenerateID(),
+				ID:       "12345",
 				Entity:   MessageEntity,
 				Subject:  "Salman and Jen",
 				Sender:   user1,
@@ -113,7 +112,7 @@ func TestCreateConversation(t *testing.T) {
 		&Message{
 			shared: shared{
 				PKey:     conversationID,
-				ID:       common.GenerateID(),
+				ID:       "123456",
 				Entity:   MessageEntity,
 				Subject:  "Re: Salman and Jen",
 				Sender:   user2,

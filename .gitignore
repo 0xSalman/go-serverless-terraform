@@ -2,7 +2,8 @@
 .vscode
 .DS_Store
 
-terraform/.terraform
-terraform/repository
-terraform/terraform.tfstate
-terraform/terraform.tfstate.backup
+infra/.terraform
+infra/repository
+infra/terraform.tfstate
+infra/terraform.tfstate.backup
+pulumi

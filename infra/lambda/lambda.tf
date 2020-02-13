@@ -38,6 +38,30 @@ resource "aws_iam_policy" "user_table_write" {
   EOF
 }
 
+resource "aws_iam_policy" "user_table_read_write" {
+  name        = "user-table-${var.env}-read-write"
+  description = "Give full access to user table"
+  policy      = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "dynamodb:Get*",
+        "dynamodb:Query",
+        "dynamodb:Scan",
+        "dynamodb:BatchWrite*",
+        "dynamodb:PutItem",
+        "dynamodb:Update*"
+      ],
+      "Resource": "${var.user_table["arn"]}"
+    }
+  ]
+}
+  EOF
+}
+
 resource "aws_iam_role" "verification_link_role" {
   name               = "${var.verification_link["name"]}-${var.env}-executor"
   assume_role_policy = <<EOF
@@ -111,6 +135,49 @@ resource "aws_lambda_function" "clone_user" {
   handler       = var.clone_user["name"]
   runtime       = "go1.x"
   filename      = "${var.folder}/${var.clone_user["name"]}-${var.clone_user["version"]}.zip"
+
+  environment {
+    variables = {
+      user_table = var.user_table["name"]
+    }
+  }
+}
+
+resource "aws_iam_role" "user_role" {
+  name               = "${var.user["name"]}-${var.env}-executor"
+  assume_role_policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "lambda.amazonaws.com"
+      },
+      "Action": "sts:AssumeRole"
+    }
+  ]
+}
+  EOF
+}
+
+resource "aws_iam_role_policy_attachment" "user_log" {
+  policy_arn = aws_iam_policy.log.arn
+  role       = aws_iam_role.user_role.name
+}
+
+resource "aws_iam_role_policy_attachment" "user_user_table" {
+  policy_arn = aws_iam_policy.user_table_read_write.arn
+  role       = aws_iam_role.user_role.name
+}
+
+resource "aws_lambda_function" "user" {
+  publish       = true
+  function_name = "${var.user["name"]}-${var.env}"
+  role          = aws_iam_role.user_role.arn
+  handler       = var.user["name"]
+  runtime       = "go1.x"
+  filename      = "${var.folder}/${var.user["name"]}-${var.user["version"]}.zip"
 
   environment {
     variables = {

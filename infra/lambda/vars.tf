@@ -18,6 +18,10 @@ variable "clone_user" {
   type = map(string)
 }
 
+variable "user" {
+  type = map(string)
+}
+
 variable "user_table" {
   type = map(string)
 }

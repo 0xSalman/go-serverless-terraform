@@ -93,7 +93,7 @@ resource "aws_cognito_identity_pool" "main" {
 }
 
 resource "aws_iam_role" "main_authenticated" {
-  name = "cognito-authenticated-${var.env}"
+  name = "authenticated-${var.env}"
 
   assume_role_policy = <<EOF
 {
@@ -124,8 +124,82 @@ EOF
   }
 }
 
+resource "aws_iam_policy" "userfiles_full_access" {
+  name        = "userfiles-${var.env}-full-access"
+  description = "Give read and write access to cognito users to userfiles S3 bucket"
+  policy      = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": [
+        "s3:GetObject",
+        "s3:PutObject",
+        "s3:DeleteObject"
+      ],
+      "Resource": [
+        "arn:aws:s3:::${var.userfiles_bucket_name}/protected/$${cognito-identity.amazonaws.com:sub}/*",
+        "arn:aws:s3:::${var.userfiles_bucket_name}/private/$${cognito-identity.amazonaws.com:sub}/*"
+      ],
+      "Effect": "Allow"
+    },
+    {
+      "Condition": {
+        "StringLike": {
+          "s3:prefix": [
+            "protected/",
+            "protected/*",
+            "private/$${cognito-identity.amazonaws.com:sub}/",
+            "private/$${cognito-identity.amazonaws.com:sub}/*"
+          ]
+        }
+      },
+      "Action": [
+        "s3:ListBucket"
+      ],
+      "Resource": [
+        "arn:aws:s3:::${var.userfiles_bucket_name}"
+      ],
+      "Effect": "Allow"
+    }
+  ]
+}
+  EOF
+}
+
+resource "aws_iam_role_policy_attachment" "userfiles_full_access" {
+  policy_arn = aws_iam_policy.userfiles_full_access.arn
+  role       = aws_iam_role.main_authenticated.name
+}
+
+resource "aws_iam_policy" "api_execute" {
+  name        = "api-${var.env}-execute"
+  description = "Give APi gateway execute access to cognito users"
+  policy      = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": [
+        "execute-api:Invoke"
+      ],
+      "Resource": [
+        "arn:aws:execute-api:${var.global["region"]}:${var.global["account"]}:*/*"
+      ],
+      "Effect": "Allow"
+    }
+  ]
+}
+  EOF
+}
+
+resource "aws_iam_role_policy_attachment" "api_execute" {
+  policy_arn = aws_iam_policy.api_execute.arn
+  role       = aws_iam_role.main_authenticated.name
+}
+
 resource "aws_iam_role" "main_unauthenticated" {
-  name = "cognito-unauthenticated-${var.env}"
+  name = "unauthenticated-${var.env}"
 
   assume_role_policy = <<EOF
 {
