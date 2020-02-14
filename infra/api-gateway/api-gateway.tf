@@ -107,6 +107,9 @@ resource "aws_api_gateway_model" "update_user_request" {
     "lastName": {
       "type": "string"
     },
+    "pictureKey": {
+      "type": "string"
+    },
     "phoneNumber": {
       "type": "string"
     },

@@ -11,36 +11,37 @@ type UserService interface {
 type group string
 
 const (
-	Professor group = "professor"
-	Student   group = "student"
+	ProfessorGroup group = "professor"
+	StudentGroup   group = "student"
 )
 
 func UserGroup(source string) group {
 	switch source {
 	case "student":
-		return Student
+		return StudentGroup
 	case "professor":
-		return Professor
+		return ProfessorGroup
 	}
 	return ""
 }
 
 type User struct {
 	ID          string    `json:"id"`
-	IdentityID  string    `json:"identityId"`
+	IdentityID  string    `json:"identityId,omitempty"`
 	Group       group     `json:"group"`
-	FirstName   string    `json:"firstName"`
-	LastName    string    `json:"lastName"`
+	FirstName   string    `json:"firstName,omitempty"`
+	LastName    string    `json:"lastName,omitempty"`
 	Email       string    `json:"email"`
-	PhoneNumber string    `json:"phoneNumber"`
+	PhoneNumber string    `json:"phoneNumber,omitempty"`
+	PictureKey  string    `json:"pictureKey,omitempty"`
 	Created     time.Time `json:"created" dynamodbav:",unixtime"`
 	LastUpdated time.Time `json:"lastUpdated" dynamodbav:",unixtime"`
 
-	student
-	professor
+	Student
+	Professor
 }
 
-type student struct {
+type Student struct {
 	Country         string `json:"country,omitempty"`
 	City            string `json:"city,omitempty"`
 	PostalCode      string `json:"postalCode,omitempty"`
@@ -57,7 +58,7 @@ type file struct {
 	Uploaded int64  `json:"uploaded"`
 }
 
-type professor struct {
+type Professor struct {
 	Title               string `json:"title,omitempty"`
 	School              string `json:"school,omitempty"`
 	Department          string `json:"department,omitempty"`

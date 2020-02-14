@@ -28,7 +28,7 @@ mkdir -p repository
 rm -fr repository/*
 
 lambdaNames=("verification-link" "clone-user" "user")
-lambdaVersions=("0.1.1" "0.1.5" "0.2.3")
+lambdaVersions=("0.1.1" "0.1.6" "0.2.4")
 
 buildLambdas ${rootDir} "${#lambdaNames[@]}" "${lambdaNames[@]}" "${#lambdaVersions[@]}" "${lambdaVersions[@]}"
 
